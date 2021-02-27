@@ -2,11 +2,10 @@ import time  #for wait of loading
 from selenium import webdriver 
 
 
-
 # ----system settings-----
 driverBrowserExecutablePath = "C:/chromedriver.exe"
-secondsToWaitLoadelementOnPage = 0.1
-secondsToWaitLoadPage = 10
+secondsToWaitLoadelementOnPage = 1
+secondsToWaitLoadPage = 15
 
 #-site and account data-
 urlRootWebPage="https://klientiks.ru/"
@@ -51,14 +50,47 @@ time.sleep(secondsToWaitLoadPage) # wait load page
 handleOfTabOpenedRef =  driver.window_handles[1] # get handle of new tab where opened reference of page client
 driver.switch_to.window(handleOfTabOpenedRef) # open this tab
 
-#open form to create client
-xpatchRefClientsPage = '/html/body/div[3]/div[1]/div[1]/div[1]/div/div[1]/div[4]/div'
-refClientPage = driver.find_element_by_xpath(xpatchRefClientsPage)
-refClientPage.click()
-print("Clicked add client")
-time.sleep(secondsToWaitLoadelementOnPage) # wait load form
+def createClient(name,phNumIn,clientCode,dateBirth,description):
+	#input validation
+	if type(name) != type(" "):
+		raise Exception("name cannot be not string")      		 
+	if len(phNumIn) != 10:
+		raise Exception("phone Number cannot be not 10 lenght")	 
+	if type(clientCode) != type(0):
+		raise Exception("clientCode cannot be not integer")		 
+	if len(dateBirth) != 4:
+		raise Exception("date Birth cannot be not 4 lenght")	 
+	#open form to create client
+	xpatchRefClientOpenForm = '/html/body/div[3]/div[1]/div[1]/div[1]/div/div[1]/div[4]/div'
+	ClientOpenFormBtn = driver.find_element_by_xpath(xpatchRefClientOpenForm)
+	ClientOpenFormBtn.click()
+	print("Clicked add client form")
+	time.sleep(secondsToWaitLoadelementOnPage) # wait load form
+	#typing data
+	nameInputXpatch="/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/form/div[1]/div[2]/div/input"
+	nameInput = driver.find_element_by_xpath(nameInputXpatch)
+	nameInput.send_keys(name)
+	phNumInputXpatch="/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/form/div[2]/div[2]/div/div[2]/div/input"
+	phNumInput = driver.find_element_by_xpath(phNumInputXpatch)
+	phNumInput.send_keys(phNumIn)
+	codeClInputXpatch="/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/form/div[3]/div[1]/div/input"
+	codeClInput = driver.find_element_by_xpath(codeClInputXpatch)
+	codeClInput.send_keys(clientCode)
+	dateBirthInputXpatch="/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/form/div[7]/div[3]/div/input"
+	dateBirthInput = driver.find_element_by_xpath(dateBirthInputXpatch)
+	dateBirthInput.send_keys(dateBirth)
+	descXpatch="/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/form/div[4]/div[4]/div/textarea"
+	desc = driver.find_element_by_xpath(descXpatch)
+	desc.send_keys(description)
+	#send form create client
+	xpatchRefClientAdd = '/html/body/div[3]/div[1]/div[1]/div[1]/div/div[2]/div[2]/div[1]'
+	ClientAddBtn = driver.find_element_by_xpath(xpatchRefClientAdd)
+	ClientAddBtn.click()
+	print("Clicked add client")
+	time.sleep(secondsToWaitLoadelementOnPage) # wait load form
 
-
+createClient("name","0000000000",1,"1010","descriotion Ept")
+time.sleep(secondsToWaitLoadPage)
 
 driver.quit()
 

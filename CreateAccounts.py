@@ -1,12 +1,12 @@
 import time  #for wait of loading
 import datetime #for birth of client manipulation
 from selenium import webdriver 
-
+import random
 
 # ----system settings-----
 driverBrowserExecutablePath = "C:/chromedriver.exe"
 secondsToWaitLoadelementOnPage = 1
-secondsToWaitLoadPage = 15
+secondsToWaitLoadPage = 10
 
 #-site and account data-
 urlRootWebPage="https://klientiks.ru/"
@@ -58,13 +58,15 @@ driver.switch_to.window(handleOfTabOpenedRef) # open this tab
 def createClient(name,phNumIn,clientCode,dateBirth,description):
 	#input validation
 	if type(name) != type(" "):
-		raise Exception("name cannot be not string")      		 
+		raise Exception("name cannot be not string ("+str(name)+")")      
+	if type(phNumIn) != type("0"):
+		raise Exception("phone number cannot be not str ("+str(clientCode)+")")				 
 	if len(phNumIn) != 10:
-		raise Exception("phone Number cannot be not 10 lenght")	 
+		raise Exception("phone number cannot be not 10 lenght ("+str(phNumIn)+")")	 
 	if type(clientCode) != type(0):
-		raise Exception("clientCode cannot be not integer")		 
+		raise Exception("clientCode cannot be not integer ("+str(clientCode)+")")		 
 	if len(dateBirth) != 4:
-		raise Exception("date Birth cannot be not 4 lenght")	 
+		raise Exception("date Birth cannot be not 4 lenght ("+str(dateBirth)+")")	 
 	#open form to create client
 	xpatchRefClientOpenForm = '/html/body/div[3]/div[1]/div[1]/div[1]/div/div[1]/div[4]/div'
 	ClientOpenFormBtn = driver.find_element_by_xpath(xpatchRefClientOpenForm)
@@ -80,7 +82,11 @@ def createClient(name,phNumIn,clientCode,dateBirth,description):
 	phNumInput.send_keys(phNumIn)
 	codeClInputXpatch="/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/form/div[3]/div[1]/div/input"
 	codeClInput = driver.find_element_by_xpath(codeClInputXpatch)
+	codeClInput.clear()
+	time.sleep(secondsToWaitLoadelementOnPage) # wait load form
+	codeClInput.click()
 	codeClInput.send_keys(clientCode)
+	time.sleep(secondsToWaitLoadelementOnPage) # wait load form
 	dateBirthInputXpatch="/html/body/div[3]/div[2]/div/div/div[2]/div/div[2]/form/div[7]/div[3]/div/input"
 	dateBirthInput = driver.find_element_by_xpath(dateBirthInputXpatch)
 	dateBirthInput.send_keys(dateBirth)
@@ -99,24 +105,23 @@ clientCodeNow = startCodeClient
 birthNow = birthFirstClient
 birthStep = (birthFirstClient - birthLastClient)/countClient
 clientsCode = []
+phoneNumNow = "0000000000"
+phoneNumbers = ["0000000000"]
 
 for clientNum in range(countClient):
 	#createClient(name,						phNumIn,		clientCode,		dateBirth,	description)
-	createClient("clientN"+str(clientNum),	"0123456789",	clientCodeNow, 	birthNow.strftime("%d%m"),	"Client number"+str(clientNum)+".")
+	createClient("client"+str(clientNum),	phoneNumNow,	clientCodeNow, 	birthNow.strftime("%d%m"),	"Client number"+str(clientNum+1)+".")
+	while phoneNumNow in phoneNumbers:
+		cut = random.randint(0,9)
+		phoneNumNow = phoneNumNow[:cut]+str(random.randint(0,9))+phoneNumNow[cut+1:]
+	phoneNumbers.append(phoneNumNow)
 	clientsCode.append(clientCodeNow)
-	if len(clientsCode) != 1:
+	if clientCodeNow != 1:
 		clientCodeNow = sum(clientsCode[-2:])
+	else:
+		clientCodeNow = 2
 	birthNow = birthNow + birthStep
 
 print("Sucscess! create: " + str(countClient) +" clients. Last code: "+str(clientsCode[-1]))
+time.sleep(120)
 driver.quit()
-
-
-# Добавить 50 клиентов с различными датами рождения с 01.01.1970 по 31.12.2000.
-# У клиентов должен быть указан код. У первого из клиентов - равен 1, у второго - 2, у последующих - сумме кодов двух предыдущих клиентов.
-# Клиентам, которым сейчас > 30 лет, предоставляется скидка на все услуги 7%; клиентам, которым сейчас от 20 до 30 лет, предоставляется скидка на все услуги 5%; клиентам, которым сейчас до 20 лет, предоставляется скидка на все услуги 3%
-# Стоимость услуг в компании > 1100 рублей
-# Скидка предоставляется только на первый визит, дальше всем предоставляется скидка 10%
-# В качестве результата предоставьте логин и пароль доступа в аккаунт, где задание выполнено.
-# С уважением,
-# Клиентикс CRM

@@ -1,4 +1,5 @@
 import time  #for wait of loading
+import datetime #for birth of client manipulation
 from selenium import webdriver 
 
 
@@ -13,6 +14,10 @@ urlLoginPage="https://klientiks.ru/login"
 accountPassword = "992927" 
 accountLogin = "9213582436" #for login using phone number
 phoneCountry = "RU" #to select phone countr (pattern of number)
+birthFirstClient = datetime.datetime(1970, 1, 1)
+birthLastClient =  datetime.datetime(2000, 12, 31)
+countClient = 50
+startCodeClient = 1
 
 
 
@@ -89,9 +94,21 @@ def createClient(name,phNumIn,clientCode,dateBirth,description):
 	print("Clicked add client")
 	time.sleep(secondsToWaitLoadelementOnPage) # wait load form
 
-createClient("name","0000000000",1,"1010","descriotion Ept")
-time.sleep(secondsToWaitLoadPage)
+#create clients
+clientCodeNow = startCodeClient
+birthNow = birthFirstClient
+birthStep = (birthFirstClient - birthLastClient)/countClient
+clientsCode = []
 
+for clientNum in range(countClient):
+	#createClient(name,						phNumIn,		clientCode,		dateBirth,	description)
+	createClient("clientN"+str(clientNum),	"0123456789",	clientCodeNow, 	birthNow.strftime("%d%m"),	"Client number"+str(clientNum)+".")
+	clientsCode.append(clientCodeNow)
+	if len(clientsCode) != 1:
+		clientCodeNow = sum(clientsCode[-2:])
+	birthNow = birthNow + birthStep
+
+print("Sucscess! create: " + str(countClient) +" clients. Last code: "+str(clientsCode[-1]))
 driver.quit()
 
 

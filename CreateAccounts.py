@@ -1,12 +1,46 @@
-import time  #to wait of loading
+import time  #for wait of loading
 from selenium import webdriver 
-from selenium.webdriver.common.keys import Keys
 
 
+
+# ----system settings-----
 driverBrowserExecutablePath = "C:/chromedriver.exe"
 
-urlOfWebToProcess="https://klientiks.ru/"
+#-site and account data-
+urlRootWebPage="https://klientiks.ru/"
+urlLoginPage="https://klientiks.ru/login"
+accountPassword = "992927" 
+accountLogin = "9213582436" #for login using phone number
+phoneCountry = "RU" #to select phone countr (pattern of number)
 
+
+
+#> get driver and open sing in page
+driver = webdriver.Chrome(driverBrowserExecutablePath)
+driver.get(urlLoginPage); #Open sing in page
+time.sleep(6) # wait load page
+
+#> sing in
+idElementLogin = "label-phone"
+elementLoginInput = driver.find_element_by_id(idElementLogin)
+elementLoginInput.click()
+elementLoginInput.send_keys(accountLogin)
+print("Typed login")
+idElementPhoneCountry = "label-autocompleteCountry"
+elementInputPhoneCountry = driver.find_element_by_id(idElementPhoneCountry)
+elementInputPhoneCountry.send_keys(phoneCountry)
+print("Typed phone phone country")
+idElementPassword = "label-password"
+elementPasswordInput = driver.find_element_by_id(idElementPassword)
+elementPasswordInput.send_keys(accountPassword)
+print("Typed password")
+xpatchElementButtonSubmitSingIn = "/html/body/div[3]/div[2]/div/div[4]/div/div/div[1]/div[1]/div[2]/form/div[5]/div/div[2]/button"
+elementSingInButton = driver.find_element_by_xpath(xpatchElementButtonSubmitSingIn)
+elementSingInButton.click()
+print("Click button sing in")
+
+time.sleep(15) #Let see something
+driver.quit()
 
 
 
